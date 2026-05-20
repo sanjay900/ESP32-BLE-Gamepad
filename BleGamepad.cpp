@@ -708,18 +708,33 @@ void BleGamepad::begin(BleGamepadConfiguration *config)
     // Unit (SI Rot : Ang Pos)
     tempHidReportDescriptor[hidReportDescriptorSize++] = 0x65;
     tempHidReportDescriptor[hidReportDescriptorSize++] = 0x12;
+    // If there is only one hat switch, use a more compatible descriptor
+    if (configuration.getHatSwitchCount() == 1) {
+      // Report Size (4)
+      tempHidReportDescriptor[hidReportDescriptorSize++] = 0x75;
+      tempHidReportDescriptor[hidReportDescriptorSize++] = 0x04;
+      // Report Count (1)
+      tempHidReportDescriptor[hidReportDescriptorSize++] = 0x95;
+      tempHidReportDescriptor[hidReportDescriptorSize++] = 1;
+      // Input (Data, Variable, Absolute)
+      tempHidReportDescriptor[hidReportDescriptorSize++] = 0x81;
+      tempHidReportDescriptor[hidReportDescriptorSize++] = 0x42;
+      // Input (Const, Variable, Absolute)
+      tempHidReportDescriptor[hidReportDescriptorSize++] = 0x81;
+      tempHidReportDescriptor[hidReportDescriptorSize++] = 0x01;
+    } else {
+      // Report Size (8)
+      tempHidReportDescriptor[hidReportDescriptorSize++] = 0x75;
+      tempHidReportDescriptor[hidReportDescriptorSize++] = 0x08;
 
-    // Report Size (8)
-    tempHidReportDescriptor[hidReportDescriptorSize++] = 0x75;
-    tempHidReportDescriptor[hidReportDescriptorSize++] = 0x08;
+      // Report Count (4)
+      tempHidReportDescriptor[hidReportDescriptorSize++] = 0x95;
+      tempHidReportDescriptor[hidReportDescriptorSize++] = configuration.getHatSwitchCount();
 
-    // Report Count (4)
-    tempHidReportDescriptor[hidReportDescriptorSize++] = 0x95;
-    tempHidReportDescriptor[hidReportDescriptorSize++] = configuration.getHatSwitchCount();
-
-    // Input (Data, Variable, Absolute)
-    tempHidReportDescriptor[hidReportDescriptorSize++] = 0x81;
-    tempHidReportDescriptor[hidReportDescriptorSize++] = 0x42;
+      // Input (Data, Variable, Absolute)
+      tempHidReportDescriptor[hidReportDescriptorSize++] = 0x81;
+      tempHidReportDescriptor[hidReportDescriptorSize++] = 0x42;
+    }
 
     // END_COLLECTION (Physical)
     tempHidReportDescriptor[hidReportDescriptorSize++] = 0xc0;
